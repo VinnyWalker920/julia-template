@@ -1,28 +1,19 @@
 FROM julia
 
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    build-essential \
+    ca-certificates \
+    git \
+    && rm -rf /var/lib/apt/lists/*
 
-#setup the environment
-RUN apt-get update && \ 
-apt-get install -y --no-install-recommends \
-build-essential \
-ca-certificates \
-git \
-&& rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 
-#Takes care of the Julia dependencies
-COPY Project.toml Manifest.toml* ./
-RUN if [ -f Project.toml ]; then \
-    julia --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'; \
-    fi
-
+COPY Project.toml ./
+RUN julia --project=. -e 'using Pkg; Pkg.add("Genie"); Pkg.status(); Pkg.precompile()'
 
 COPY . .
 
-#For the Webserver
 EXPOSE 8000
 
-ENV CONTEXT=development
-
-#Runs the main julia file
-CMD ["julia", "--project=.", "src/main.jl"]
+CMD ["julia", "--project=.", "src/app.jl"]

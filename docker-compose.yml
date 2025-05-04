@@ -1,14 +1,13 @@
 version: '3.8'
 services:
-  julia-template: # Change this to your perfered service name
+  julia-app:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: julia-template # Change this to your perfered service name
+    container_name: julia-app
     volumes:
       - ./:/app
     ports:
       - "8000:8000"
     environment:
       - JULIA_NUM_THREADS=auto
-      - CONTEXT=development
